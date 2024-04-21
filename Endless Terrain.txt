@@ -1,0 +1,94 @@
+using UnityEngine;
+using System.Collections.Generic;
+
+public class EndlessTerrain : MonoBehaviour
+{
+    public GameObject terrainPrefab;
+    public Transform parentContainer; // Empty game object to contain spawned chunks
+
+    public Transform playerTransform; // Player's transform
+    public float chunkSize = 100f; // Size of each terrain chunk
+
+    private int chunksVisibleInViewDistance = 2;
+    private Dictionary<Vector2, TerrainChunk> terrainChunkDictionary = new Dictionary<Vector2, TerrainChunk>();
+    private float lastSpawnTime; // Track the time when the last chunk was spawned
+    public float spawnDelay = 1f; // Delay between chunk spawns
+
+    void Update()
+    {
+        UpdateVisibleChunks();
+    }
+
+    void UpdateVisibleChunks()
+    {
+        int currentChunkCoordX = Mathf.RoundToInt(playerTransform.position.x / chunkSize);
+        int currentChunkCoordY = Mathf.RoundToInt(playerTransform.position.z / chunkSize);
+
+        for (int xOffset = -chunksVisibleInViewDistance; xOffset <= chunksVisibleInViewDistance; xOffset++)
+        {
+            for (int yOffset = -chunksVisibleInViewDistance; yOffset <= chunksVisibleInViewDistance; yOffset++)
+            {
+                Vector2 viewedChunkCoord = new Vector2(currentChunkCoordX + xOffset, currentChunkCoordY + yOffset);
+
+                if (!terrainChunkDictionary.ContainsKey(viewedChunkCoord))
+                {
+                    // Check if enough time has passed since the last spawn
+                    if (Time.time - lastSpawnTime > spawnDelay)
+                    {
+                        CreateChunk(viewedChunkCoord);
+                        lastSpawnTime = Time.time; // Update last spawn time
+                    }
+                }
+            }
+        }
+    }
+
+    void CreateChunk(Vector2 coord)
+    {
+        // Calculate the position of the new chunk based on existing chunks
+        Vector3 position = FindEmptyPosition(coord);
+
+        // Create a parent container for the chunk
+        GameObject chunkParent = new GameObject("Chunk_" + coord.x + "_" + coord.y);
+        chunkParent.transform.parent = parentContainer; // Set as child of parent container
+
+        GameObject newChunkObject = Instantiate(terrainPrefab, position, Quaternion.identity, chunkParent.transform); // Set parent to chunkParent
+        TerrainChunk newChunk = new TerrainChunk(newChunkObject, coord, chunkParent);
+        terrainChunkDictionary.Add(coord, newChunk);
+    }
+
+    Vector3 FindEmptyPosition(Vector2 coord)
+    {
+        Vector3 position = new Vector3(coord.x * chunkSize, 0, coord.y * chunkSize);
+
+        foreach (var kvp in terrainChunkDictionary)
+        {
+            Vector3 existingPosition = new Vector3(kvp.Value.coord.x * chunkSize, 0, kvp.Value.coord.y * chunkSize);
+            float distance = Vector3.Distance(position, existingPosition);
+            
+            // Check if the distance between the new position and existing position is less than the chunk size
+            if (distance < chunkSize)
+            {
+                // Adjust the position by at least the chunk size to avoid collision
+                position += new Vector3(chunkSize, 0, 0);
+            }
+        }
+
+        return position;
+    }
+
+
+    public class TerrainChunk
+    {
+        public GameObject chunkObject;
+        public Vector2 coord;
+        public GameObject parentContainer;
+
+        public TerrainChunk(GameObject chunkObject, Vector2 coord, GameObject parentContainer)
+        {
+            this.chunkObject = chunkObject;
+            this.coord = coord;
+            this.parentContainer = parentContainer;
+        }
+    }
+}
