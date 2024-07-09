@@ -1,0 +1,45 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
+local RunService = game:GetService("RunService")
+
+local aimbotEnabled = true
+local targetPlayer = nil
+
+-- Aimbot function
+local function aimbot()
+    if aimbotEnabled then
+        local playersInRange = {}
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Head") then
+                local distance = (player.Character.Head.Position - LocalPlayer.Character.Head.Position).Magnitude
+                if distance <= 50 then
+                    table.insert(playersInRange, player)
+                end
+            end
+        end
+        
+        if #playersInRange > 0 then
+            targetPlayer = playersInRange[math.random(1, #playersInRange)]
+            local targetHead = targetPlayer.Character.Head
+            if targetHead then
+                Camera.CFrame = CFrame.new(Camera.CFrame.Position, targetHead.Position)
+            end
+        end
+    end
+end
+
+-- Auto-reload script when character dies
+local function OnCharacterAdded(character)
+    wait(1)
+    if character then
+        local LocalScript = script:Clone()
+        LocalScript.Parent = character
+        LocalScript.Disabled = false
+    end
+end
+
+LocalPlayer.CharacterAdded:Connect(OnCharacterAdded)
+
+-- Run the aimbot function every frame
+RunService.RenderStepped:Connect(aimbot)
