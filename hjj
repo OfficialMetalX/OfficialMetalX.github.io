@@ -40,4 +40,9 @@ HydroLabel.TextStrokeTransparency = 0
 HydroLabel.Parent = HydroText
 ]]
 
-loadstring(script)()
+local func, err = loadstring(script)
+if func then
+    func() -- execute the script
+else
+    error(err) -- print the error message if the script fails to load
+end
