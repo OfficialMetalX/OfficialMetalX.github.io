@@ -1,0 +1,39 @@
+-- Create a new frame to hold the custom UI elements
+local HydroFrame = Instance.new("Frame")
+HydroFrame.Size = UDim2.new(0, 375, 0, 200)
+HydroFrame.Position = UDim2.new(0.5, -187.5, 0.5, -100)
+HydroFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- white background
+HydroFrame.Parent = game.Players.LocalPlayer.PlayerGui
+
+-- Create a new frame to hold the black line
+local BlackLine1 = Instance.new("Frame")
+BlackLine1.Size = UDim2.new(0, 375, 0, 5)
+BlackLine1.Position = UDim2.new(0, 0, 0, 0)
+BlackLine1.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- black
+BlackLine1.Parent = HydroFrame
+
+-- Create a new frame to hold the red line
+local RedLine = Instance.new("Frame")
+RedLine.Size = UDim2.new(0, 375, 0, 5)
+RedLine.Position = UDim2.new(0, 0, 0.45, 0)
+RedLine.BackgroundColor3 = Color3.fromRGB(255, 0, 0) -- red
+RedLine.Parent = HydroFrame
+
+-- Create a new frame to hold the text
+local HydroText = Instance.new("Frame")
+HydroText.Size = UDim2.new(0, 150, 0, 50)
+HydroText.Position = UDim2.new(0.5, -75, 0.5, -25)
+HydroText.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- black
+HydroText.Parent = HydroFrame
+
+-- Create a new label to display the text
+local HydroLabel = Instance.new("TextLabel")
+HydroLabel.Text = "Hydro Hub"
+HydroLabel.TextColor3 = Color3.fromRGB(255, 0, 0) -- red
+HydroLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- black
+HydroLabel.BorderSizePixel = 0
+HydroLabel.Font = Enum.Font.SourceSansBold
+HydroLabel.TextSize = 30
+HydroLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0) -- black
+HydroLabel.TextStrokeTransparency = 0
+HydroLabel.Parent = HydroText
